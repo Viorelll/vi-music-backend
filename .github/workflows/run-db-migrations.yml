@@ -1,0 +1,32 @@
+name: Helper - Run DB migrations
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      CONNECTION_STRING:
+        required: true
+
+jobs:
+  run-db-migrations:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Dotnet build
+        run: dotnet build
+        working-directory: ./src/ViMusic.Migrator
+
+      - name: Run migrations
+        run: dotnet run -- "${{ secrets.CONNECTION_STRING }}"
+        working-directory: ./src/ViMusic.Migrator

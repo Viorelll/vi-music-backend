@@ -1,0 +1,55 @@
+name: Helper - Deploy container apps
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      backend-api-image-tag:
+        required: true
+        type: string
+      message-consumers-image-tag:
+        required: true
+        type: string
+      jobs-host-image-tag:
+        required: true
+        type: string
+      display-name:
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID: 
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      ENV_AZURE_SUBSCRIPTION_ID:
+        required: true
+jobs:
+  deploy-image:
+    runs-on: ubuntu-latest
+    name: ${{ inputs.display-name }}
+    environment: ${{ inputs.environment }}
+
+    # Needed by azure cli to be able to login
+    permissions:
+      id-token: write
+
+    steps:
+      - name: 'Az CLI login'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Update backend api container app'
+        run: az containerapp update -n ${{ vars.BACKEND_API_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.backend-api-image-tag }} --subscription ${{ secrets.ENV_AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Update message consumer container app'
+        run: az containerapp update -n ${{ vars.MESSAGE_CONSUMER_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.message-consumers-image-tag }} --subscription ${{ secrets.ENV_AZURE_SUBSCRIPTION_ID }} 
+
+      - name: 'Update jobs host container app'
+        run: az containerapp update -n ${{ vars.JOBS_HOST_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.jobs-host-image-tag }} --subscription ${{ secrets.ENV_AZURE_SUBSCRIPTION_ID }}   
