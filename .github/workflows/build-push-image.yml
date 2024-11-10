@@ -22,7 +22,7 @@ on:
         required: true
         type: string
     secrets:
-      AZURE_CLIENT_ID: 
+      AZURE_CLIENT_ID:
         required: true
       AZURE_TENANT_ID:
         required: true
@@ -32,7 +32,7 @@ on:
       image-tag:
         description: "The tag of the image that's been built"
         value: ${{ jobs.build-push-image.outputs.image-tag }}
-  
+
 jobs:
   build-push-image:
     runs-on: ubuntu-latest
@@ -40,37 +40,38 @@ jobs:
     environment: ${{ inputs.environment }}
     outputs:
       image-tag: ${{ steps.set-image-tag.outputs.image-tag }}
-  
+
     # Needed by azure cli to be able to login
     permissions:
       id-token: write
-      contents: write    
+      contents: write
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: 'Az CLI login'
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+      - name: "Az CLI login"
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Check if image already exists
-      id: image-exists-check
-      run: echo "image_exists=$(az acr repository show-tags --name ${{ vars.ACR_NAME }} --repository ${{ inputs.image-identifier }} | jq 'any(. == "${{ github.sha }}")')" >> $GITHUB_OUTPUT
-        
-    - name: Set image tag
-      id: set-image-tag
-      run: echo "image-tag=${{ vars.ACR_ENDPOINT }}/${{ inputs.image-identifier }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+      - name: Check if image already exists
+        id: image-exists-check
+        run: echo "image_exists=$(az acr repository show-tags --name ${{ vars.ACR_NAME }} --repository ${{ inputs.image-identifier }} | jq 'any(. == "${{ github.sha }}")')" >> $GITHUB_OUTPUT
 
-    - name: Build container and tag it
-      if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
-      run: docker build -f './src/Dockerfile' --target ${{ inputs.build-target }} --tag ${{ steps.set-image-tag.outputs.image-tag }} .
-    
-    - name: Azure container registry login
-      if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
-      run: az acr login --name ${{ vars.ACR_ENDPOINT }}
+      - name: Set image tag
+        id: set-image-tag
+        run: echo "image-tag=${{ vars.ACR_ENDPOINT }}/${{ inputs.image-identifier }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
-    - name: Push image
-      if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
-      run: docker push ${{ steps.set-image-tag.outputs.image-tag }}
+      - name: Build container and tag it
+        if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
+        run: docker build -f './src/Dockerfile' --target ${{ inputs.build-target }} --tag ${{ steps.set-image-tag.outputs.image-tag }} .
+
+      - name: Azure container registry login
+        if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
+        run: az acr login --name ${{ vars.ACR_ENDPOINT }}
+
+      - name: Push image
+        if: ${{ steps.image-exists-check.outputs.image_exists == 'false' }}
+        run: docker push ${{ steps.set-image-tag.outputs.image-tag }}
