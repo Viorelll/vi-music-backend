@@ -7,7 +7,7 @@ on:
         required: true
         type: string
     secrets:
-      AZURE_CLIENT_ID: 
+      AZURE_CLIENT_ID:
         required: true
       AZURE_TENANT_ID:
         required: true
@@ -30,39 +30,15 @@ jobs:
       build-target: backend-api
       image-identifier: monolith-backend-api
     secrets: inherit
-  build-push-message-consumers-image:
-    name: "Build & push message consumers"
-    uses: ./.github/workflows/build-push-image.yml
-    with:
-      display-name: "Build & push message consumers"
-      environment: ${{ inputs.environment }}
-      image-artifact-name: message-consumers
-      image-artifact-filename: message-consumers
-      build-target: message-consumers
-      image-identifier: monolith-message-consumers
-    secrets: inherit  
-  build-push-jobs-host-image:
-    name: "Build & push jobs host"
-    uses: ./.github/workflows/build-push-image.yml
-    with:
-      display-name: "Build & push jobs host"
-      environment: ${{ inputs.environment }}
-      image-artifact-name: jobs-host
-      image-artifact-filename: jobs-host
-      build-target: jobs-host
-      image-identifier: monolith-jobs-host
-    secrets: inherit
-  
+
   deploy-container-apps:
     name: "Deploy container apps"
     uses: ./.github/workflows/deploy-container-app.yml
-    needs: [build-push-backend-api-image, build-push-message-consumers-image, build-push-jobs-host-image]     
+    needs: [build-push-backend-api-image]
     with:
       display-name: "Deploy container apps"
       environment: ${{ inputs.environment }}
       backend-api-image-tag: ${{ needs.build-push-backend-api-image.outputs.image-tag }}
-      message-consumers-image-tag: ${{ needs.build-push-message-consumers-image.outputs.image-tag }}
-      jobs-host-image-tag:  ${{ needs.build-push-jobs-host-image.outputs.image-tag }}
     secrets: inherit
 
   run-db-migrations:
@@ -73,4 +49,3 @@ jobs:
       environment: ${{ inputs.environment }}
     secrets:
       CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-  
