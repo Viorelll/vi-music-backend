@@ -9,7 +9,7 @@ on:
     secrets:
       AZURE_CLIENT_ID:
         required: true
-      ARM_CLIENT_SECRET:
+      AZURE_CLIENT_SECRET:
         required: true
       AZURE_TENANT_ID:
         required: true
