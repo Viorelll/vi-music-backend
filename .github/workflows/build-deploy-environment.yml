@@ -31,21 +31,21 @@ jobs:
       image-identifier: monolith-backend-api
     secrets: inherit
 
-  deploy-container-apps:
-    name: "Deploy container apps"
-    uses: ./.github/workflows/deploy-container-app.yml
-    needs: [build-push-backend-api-image]
-    with:
-      display-name: "Deploy container apps"
-      environment: ${{ inputs.environment }}
-      backend-api-image-tag: ${{ needs.build-push-backend-api-image.outputs.image-tag }}
-    secrets: inherit
+  # deploy-container-apps:
+  #   name: "Deploy container apps"
+  #   uses: ./.github/workflows/deploy-container-app.yml
+  #   needs: [build-push-backend-api-image]
+  #   with:
+  #     display-name: "Deploy container apps"
+  #     environment: ${{ inputs.environment }}
+  #     backend-api-image-tag: ${{ needs.build-push-backend-api-image.outputs.image-tag }}
+  #   secrets: inherit
 
-  run-db-migrations:
-    name: "Run DB migrations"
-    uses: ./.github/workflows/run-db-migrations.yml
-    needs: deploy-container-apps
-    with:
-      environment: ${{ inputs.environment }}
-    secrets:
-      CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+  # run-db-migrations:
+  #   name: "Run DB migrations"
+  #   uses: ./.github/workflows/run-db-migrations.yml
+  #   needs: deploy-container-apps
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets:
+  #     CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
