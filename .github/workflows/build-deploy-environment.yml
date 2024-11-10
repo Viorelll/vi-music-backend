@@ -13,8 +13,6 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
-      ENV_AZURE_SUBSCRIPTION_ID:
-        required: true
       DB_CONNECTION_STRING:
         required: true
 
