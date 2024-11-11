@@ -9,12 +9,6 @@ on:
       backend-api-image-tag:
         required: true
         type: string
-      message-consumers-image-tag:
-        required: true
-        type: string
-      jobs-host-image-tag:
-        required: true
-        type: string
       display-name:
         required: true
         type: string
