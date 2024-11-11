@@ -45,9 +45,3 @@ jobs:
 
       - name: "Update backend api container app"
         run: az containerapp update -n ${{ vars.BACKEND_API_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.backend-api-image-tag }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: "Update message consumer container app"
-        run: az containerapp update -n ${{ vars.MESSAGE_CONSUMER_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.message-consumers-image-tag }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: "Update jobs host container app"
-        run: az containerapp update -n ${{ vars.JOBS_HOST_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.jobs-host-image-tag }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
