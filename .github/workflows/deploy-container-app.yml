@@ -21,6 +21,8 @@ on:
     secrets:
       AZURE_CLIENT_ID:
         required: true
+      AZURE_CLIENT_SECRET:
+        required: true
       AZURE_TENANT_ID:
         required: true
       AZURE_SUBSCRIPTION_ID:
@@ -39,9 +41,7 @@ jobs:
       - name: "Az CLI login"
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
       - name: "Update backend api container app"
         run: az containerapp update -n ${{ vars.BACKEND_API_CONTAINER_APP_NAME }} -g ${{ vars.RESOURCE_GROUP }} --image ${{ inputs.backend-api-image-tag }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
