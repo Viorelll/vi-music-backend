@@ -57,7 +57,8 @@ jobs:
 
       - name: Check if image already exists
         id: image-exists-check
-        run: echo "image_exists=$(az acr repository show-tags --name ${{ vars.ACR_NAME }} --repository ${{ inputs.image-identifier }} | jq 'any(. == "${{ github.sha }}")')" >> $GITHUB_OUTPUT
+        run: echo "image_exists='false'
+        # $(az acr repository show-tags --name ${{ vars.ACR_NAME }} --repository ${{ inputs.image-identifier }} | jq 'any(. == "${{ github.sha }}")')" >> $GITHUB_OUTPUT
 
       - name: Set image tag
         id: set-image-tag
