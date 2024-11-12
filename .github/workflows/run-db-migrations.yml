@@ -25,8 +25,8 @@ jobs:
 
       - name: Dotnet build
         run: dotnet build
-        working-directory: ./src/ViMusic.Migrator
+        working-directory: ./src/ViMusic.Migrator.csproj
 
       - name: Run migrations
         run: dotnet run -- "${{ secrets.CONNECTION_STRING }}"
-        working-directory: ./src/ViMusic.Migrator
+        working-directory: ./src/ViMusic.Migrator.csproj
