@@ -11,16 +11,17 @@ internal class Program
         var config = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddCommandLine(args)
             .AddEnvironmentVariables() // Optionally add environment variables
-            .Build();
+        .Build();
 
         var host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddApplicationServices();
-                services.AddInfrastructureServices(context.Configuration);
-            })
-            .Build();
+        .ConfigureServices((context, services) =>
+        {
+            services.AddApplicationServices();
+            services.AddInfrastructureServices(config);
+        })
+        .Build();
 
         // Apply migrations at startup
         using (var scope = host.Services.CreateScope())

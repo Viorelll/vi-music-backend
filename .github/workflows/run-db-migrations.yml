@@ -28,7 +28,5 @@ jobs:
         working-directory: ./src/ViMusic.Migrator
 
       - name: Run migrations
-        env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }} # Using GitHub secret for security
-        run: dotnet run --project ViMusic.Migrator.csproj --configuration Release
+        run: dotnet run --project ViMusic.Migrator.csproj --configuration Release  --ConnectionStrings:PostgresConnection="${{ secrets.CONNECTION_STRING }}"
         working-directory: ./src/ViMusic.Migrator
