@@ -24,7 +24,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Dotnet build
-        run: dotnet build ViMusic.Migrator.csproj
+        run: dotnet build ViMusic.Migrator.csproj --configuration Release
         working-directory: ./src/ViMusic.Migrator
 
       - name: Run migrations
