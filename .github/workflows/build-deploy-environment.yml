@@ -41,11 +41,11 @@ jobs:
       backend-api-image-tag: ${{ needs.build-push-backend-api-image.outputs.image-tag }}
     secrets: inherit
 
-  # run-db-migrations:
-  #   name: "Run DB migrations"
-  #   uses: ./.github/workflows/run-db-migrations.yml
-  #   needs: deploy-container-apps
-  #   with:
-  #     environment: ${{ inputs.environment }}
-  #   secrets:
-  #     CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+  run-db-migrations:
+    name: "Run DB migrations"
+    uses: ./.github/workflows/run-db-migrations.yml
+    needs: deploy-container-apps
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
