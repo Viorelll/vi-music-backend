@@ -1,10 +1,11 @@
-using ViMusic.Infrastructure.Persistence;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(configuration);
 builder.Services.AddApiServices();
 
 builder.Services.AddControllers();
@@ -29,6 +30,22 @@ if (app.Environment.IsDevelopment())
     //    await initialiser.SeedAsync();
     //}
 }
+
+// Configure App Configuration
+var appConfigEndpoint = Environment.GetEnvironmentVariable("AppConfigEndpoint");
+
+if (!string.IsNullOrEmpty(appConfigEndpoint))
+{
+    builder.Configuration.AddAzureAppConfiguration(options =>
+        options
+            .ConfigureKeyVault(kv =>
+                kv.SetCredential(new DefaultAzureCredential()))
+            .Connect(
+                new Uri(appConfigEndpoint),
+                new DefaultAzureCredential()));
+}
+
+builder.Configuration.AddUserSecrets<Program>();
 
 app.UseHealthChecks("/health");
 
