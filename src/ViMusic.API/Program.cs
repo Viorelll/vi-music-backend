@@ -13,6 +13,22 @@ builder.Services.AddControllers();
 // builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
+// Configure App Configuration
+var appConfigEndpoint = Environment.GetEnvironmentVariable("AppConfigEndpoint");
+
+if (!string.IsNullOrEmpty(appConfigEndpoint))
+{
+    builder.Configuration.AddAzureAppConfiguration(options =>
+        options
+            .ConfigureKeyVault(kv =>
+                kv.SetCredential(new DefaultAzureCredential()))
+            .Connect(
+                new Uri(appConfigEndpoint),
+                new DefaultAzureCredential()));
+}
+
+builder.Configuration.AddUserSecrets<Program>();
+
 // Add Cors
 var origin = configuration.GetValue<string>("AllowUIOrigin") ?? string.Empty;
 builder.Services.AddCors(options =>
@@ -40,22 +56,6 @@ if (app.Environment.IsDevelopment())
     //    await initialiser.SeedAsync();
     //}
 }
-
-// Configure App Configuration
-var appConfigEndpoint = Environment.GetEnvironmentVariable("AppConfigEndpoint");
-
-if (!string.IsNullOrEmpty(appConfigEndpoint))
-{
-    builder.Configuration.AddAzureAppConfiguration(options =>
-        options
-            .ConfigureKeyVault(kv =>
-                kv.SetCredential(new DefaultAzureCredential()))
-            .Connect(
-                new Uri(appConfigEndpoint),
-                new DefaultAzureCredential()));
-}
-
-builder.Configuration.AddUserSecrets<Program>();
 
 app.UseHealthChecks("/health");
 
