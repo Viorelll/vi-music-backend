@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  api:
+    container_name: vi-music-dotnet-api
+    build: "src"
+    environment:
+      - ConnectionStrings:PostgresConnection=Host=postgres-db;Port=5432;Database=ViMusicDb;Username=admin;Password=admin
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres-db
+    image: postgres
+    ports:
+      - 5432:5432
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes: ["c:/docker/posgres-db:/var/lib/postgresql/data"]
